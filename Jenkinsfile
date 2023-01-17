@@ -1,7 +1,7 @@
 pipeline {
     agent {
       kubernetes  {
-            inheritFrom 'jenkins-slave'
+            inheritFrom 'testing-stage-0'
              defaultContainer 'jnlp'
       yaml """
 apiVersion: v1
