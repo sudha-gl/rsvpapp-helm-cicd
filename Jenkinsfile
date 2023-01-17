@@ -1,4 +1,13 @@
-  environment {
+  node {
+    def app
+
+    stage('Clone repository') {
+      
+
+        checkout scm
+    }
+    
+    environment {
       IMAGE_REPO = "sudhalokesha7542/helm"
       // Instead of DOCKERHUB_USER, use your Dockerhub name
   }
