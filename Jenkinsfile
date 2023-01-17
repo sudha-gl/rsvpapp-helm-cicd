@@ -1,4 +1,5 @@
-  node {
+
+node {
     def app
 
     stage('Clone repository') {
@@ -6,26 +7,29 @@
 
         checkout scm
     }
-    
-    environment {
-      IMAGE_REPO = "sudhalokesha7542/helm"
-      // Instead of DOCKERHUB_USER, use your Dockerhub name
-  }
-  stages {
-    stage('Build') {
-      environment {
-        DOCKERHUB_CREDS = credentials('dockerhub')
-      }
-      steps {
-        container('docker') {
-          sh "echo ${env.GIT_COMMIT}"
-          // Build new image
-          sh "until docker container ls; do sleep 3; done && docker image build -t  ${env.IMAGE_REPO}:${env.GIT_COMMIT} ."
-          // Publish new image
-          sh "docker login --username $DOCKERHUB_CREDS_USR --password $DOCKERHUB_CREDS_PSW && docker image push ${env.IMAGE_REPO}:${env.GIT_COMMIT}"
-        }
-      }
+
+    stage('Build image') {
+  
+       app = docker.build("sudhalokesha7542/helm")
     }
+
+    stage('Test image') {
+  
+
+//         app.inside {
+//             sh 'echo "Tests passed"'
+//         }
+    }
+
+    stage('Push image') {
+        
+        docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+            app.push("${env.BUILD_NUMBER}")
+        }
+    }
+    
+    
+    
     stage('Deploy') {
       environment {
         GIT_CREDS = credentials('github')
